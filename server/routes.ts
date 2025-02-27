@@ -58,6 +58,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendStatus(200);
   });
 
+  app.get("/api/songs/:id/plays", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    const count = await storage.getPlayCount(parseInt(req.params.id));
+    res.json(count);
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

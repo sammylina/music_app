@@ -123,6 +123,10 @@ export class MemStorage implements IStorage {
     );
   }
 
+  async getSong(id: number): Promise<Song | undefined> {
+    return this.songs.get(id);
+  }
+
   async getAudioFile(audioFile: string): Promise<Buffer | undefined> {
     return this.audioFiles.get(audioFile);
   }
