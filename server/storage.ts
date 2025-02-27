@@ -31,6 +31,50 @@ export class MemStorage implements IStorage {
       password: "admin123",
       isAdmin: true,
     });
+
+    // Seed playlists
+    const playlist1 = this.createPlaylist({
+      title: "Chill Vibes",
+      description: "Relaxing tunes for your downtime",
+    });
+
+    const playlist2 = this.createPlaylist({
+      title: "Workout Mix",
+      description: "High-energy songs to keep you motivated",
+    });
+
+    // Seed songs
+    Promise.all([playlist1, playlist2]).then(([chillPlaylist, workoutPlaylist]) => {
+      // Chill playlist songs
+      this.createSong({
+        title: "Ocean Waves",
+        artist: "Nature Sounds",
+        playlistId: chillPlaylist.id,
+        audioFile: "ocean-waves.mp3"
+      }, Buffer.from(""));
+
+      this.createSong({
+        title: "Gentle Rain",
+        artist: "Ambient Music",
+        playlistId: chillPlaylist.id,
+        audioFile: "gentle-rain.mp3"
+      }, Buffer.from(""));
+
+      // Workout playlist songs
+      this.createSong({
+        title: "Power Up",
+        artist: "Energy Beats",
+        playlistId: workoutPlaylist.id,
+        audioFile: "power-up.mp3"
+      }, Buffer.from(""));
+
+      this.createSong({
+        title: "Fast Pace",
+        artist: "Workout Remix",
+        playlistId: workoutPlaylist.id,
+        audioFile: "fast-pace.mp3"
+      }, Buffer.from(""));
+    });
   }
 
   async getUser(id: number): Promise<User | undefined> {
