@@ -1,0 +1,90 @@
+I want to prototype a mobile first application that uses React as frontend and Flask for backend. Its primary goal is to give a very simple user experience and build a song player. Uses are able to create account and listen to songs on the application.  Next all the necessary details of the application are listed and follow them, while something is not provided use your own assumption or ask for it. After prototyping, I want to further develop the application manually. So add necessary tools and environments for further local development.
+
+Authentication System:
+
+	Before loging in
+
+User registration and login using token based authentication
+User password forget and recovery via email
+
+	After user is logged in
+		
+Logout feature
+Change password feature
+
+	Role-based access (Admin vs Regular users)
+
+The admin interact with the app using a terminal to perform actions that are related to it
+It uses the terminal curl request. Specify and standardize the request format and keep that in mind while building the backend
+The user also need to provide password and username in order to execute his requests
+Pre-configured admin account (admin@example.com) with default password is required
+
+Admin Features:
+
+Perform all CRUD operations on the playlist
+The playlist has a list name, contains songs
+Upload songs to playlists
+Songs will be uploaded to a file storage
+Every song has to be related to some playlist
+Admin is able to see play history / stats of a song
+Admin is able to get the play history / counts of songs per user
+Manage song metadata (title, artist)
+Use this to edit title or artist name or any other playlist and song related information
+File upload capability for music files
+Able to upload any type of audio files
+Allow to delete, get list of existing songs
+
+
+Music Player Features:
+
+	Home page of the player
+The homepage of the app has a gird view of play lists
+When a user chooses a playlist, it will list all songs in it
+All songs have yellow color in the play list if it isn’t played once or didn’t play until the end
+If a song is played once , turn its color to green
+If it is played more than 1 keep counting and show the number on the right corner of the song 
+The player has play/ pause functionality
+Also a volume control with mute toggle
+Progress bar for song tracking
+Song information ( title, play list )
+Play count, that is specific to the user
+Move forward and backward in 5 seconds
+
+
+Playlist Management:
+The play list has a title and description
+Also number of songs in it
+Go back arrow to go back from the list to player list grid
+
+User Features:
+Users must be able to log out and comeback all is previous activities must be preserved in the database
+Use simple and very intuitive UI, we don’t need much complexity
+A navigation bar with three dots for logout and password change
+
+Technical Details and capabilities
+
+PostgreSQL database for data persistence
+Create all the necessary tables and relations 
+Roughly we could have users, songs, playlists, and also other tables to track users activity related to songs.
+
+Flask backend with RESTful API
+The backend must be accessible from both the frontend and also the curl request make by the admin
+It initialize connection with the database
+React front end with required UI library
+The app must be mobile first 
+Use UI that is good for mobiles
+Simple UI with basic functionalities
+Don’t use typescript, use JavaScript
+Build the pieces as components and combine them together to make the bigger app
+Use the built-in react state management 
+Add some caching mechanism to save the music user have been playing if he leaves and comes back
+If the user logs out retrieve remove the cache
+File storage for uploaded music
+Upload songs to a local file storage
+
+Development and deployment env
+	
+	Containerize the app, both the backend and the fronted in a single container.
+	Create the necessary basic CI/CD pipe lines using GitHub Action for future use
+	Prepare a script that setup and seed the starter data to the database
+	Add other necessary scripts
