@@ -1,8 +1,8 @@
 
 import os
 from flask import Flask
-from app.models import db, Song
-from server.app.config import config
+from models import db, Song
+from config import config
 import shutil
 
 def migrate_db():

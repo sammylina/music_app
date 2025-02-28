@@ -38,16 +38,17 @@ def create_app(config_name=None):
         from .models import User, Playlist, Song
         try:
             db.create_all()
-            print("Database tables created successfully.")
+            print("Database tables created successfully by the App.")
         except psycopg2.Error as e:
             print(f"Error creating database tables: {e}")
             return app #Return app to prevent further execution if DB creation fails
 
         # Add seed data if database is empty
         if not User.query.first():
+            print('creating another user')
             admin = User(
                 username="admin@example.com",
-                password=generate_password_hash("admin123"),
+                password=generate_password_hash("admin123", method='pbkdf2:sha256', salt_length=8),
                 is_admin=True
             )
             db.session.add(admin)
