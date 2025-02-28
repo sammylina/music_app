@@ -1,5 +1,5 @@
-
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import config from '../config';
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
@@ -13,7 +13,10 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  const res = await fetch(url, {
+  const fullUrl = url.startsWith('http') ? url : `${config.apiUrl}${url}`;
+  console.log(`Making ${method} request to: ${fullUrl}`);
+
+  const res = await fetch(fullUrl, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
     body: data ? JSON.stringify(data) : undefined,
@@ -57,34 +60,7 @@ export const queryClient = new QueryClient({
   },
 });
 
-// Utility functions for Flask backend
-import config from '../config';
-
-export const apiRequest = async (method: string, url: string, data?: any) => {
-  const fullUrl = url.startsWith('http') ? url : `${config.apiUrl}${url}`;
-  console.log(`Making ${method} request to: ${fullUrl}`);
-
-  const options: RequestInit = {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-  };
-
-  if (data) {
-    options.body = JSON.stringify(data);
-  }
-
-  const response = await fetch(fullUrl, options);
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({ message: 'An error occurred' }));
-    throw new Error(errorData.error || errorData.message || 'Request failed');
-  }
-  
-  return response;
-};
-
+// Auth utility functions
 export const loginUser = async (username: string, password: string) => {
   const res = await apiRequest('POST', '/api/login', { username, password });
   return res.json();
@@ -101,7 +77,7 @@ export const logoutUser = async () => {
 
 export const getCurrentUser = async () => {
   try {
-    const res = await fetch('/api/user', { credentials: 'include' });
+    const res = await apiRequest('GET', '/api/user');
     if (!res.ok) {
       if (res.status === 401) return null;
       throw new Error('Failed to get current user');
@@ -113,14 +89,11 @@ export const getCurrentUser = async () => {
 };
 
 export const getPlaylists = async () => {
-  const res = await fetch('/api/playlists', { credentials: 'include' });
-  await throwIfResNotOk(res);
+  const res = await apiRequest('GET', '/api/playlists');
   return res.json();
 };
 
 export const getPlaylistSongs = async (playlistId: number) => {
-  const res = await fetch(`/api/playlists/${playlistId}/songs`, { credentials: 'include' });
-  await throwIfResNotOk(res);
+  const res = await apiRequest('GET', `/api/playlists/${playlistId}/songs`);
   return res.json();
 };
-

@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS
 import os
 from .models import db
@@ -94,6 +94,11 @@ def create_app(config_name=None):
             ]
             db.session.add_all(songs)
             db.session.commit()
+
+   #Added test endpoint
+    @app.route('/api/test', methods=['GET'])
+    def test_connection():
+        return jsonify({"message": "Backend connection successful!"})
 
     return app
 

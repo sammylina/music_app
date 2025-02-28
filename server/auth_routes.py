@@ -1,5 +1,4 @@
-
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from .models import db, User
 
@@ -17,12 +16,18 @@ def register():
         return jsonify({"error": "Username already exists"}), 409
 
     # Create new user
-    hashed_password = generate_password_hash(data['password'])
+    hashed_password = generate_password_hash(data['password'], method='pbkdf2:sha256',  salt_length=8)
     new_user = User(username=data['username'], password=hashed_password)
     db.session.add(new_user)
     db.session.commit()
 
-    return jsonify(new_user.__dict__), 201
+    # Set session
+    session['user_id'] = new_user.id
+    
+    return jsonify({
+        "id": new_user.id,
+        "username": new_user.username
+    }), 201
 
 @auth_bp.route('/api/login', methods=['POST'])
 def login():
@@ -34,21 +39,32 @@ def login():
     if not user or not check_password_hash(user.password, data['password']):
         return jsonify({"error": "Invalid credentials"}), 401
 
-    # In a real app, you would create a session or token here
-    return jsonify(user.__dict__), 200
+    # Set session
+    session['user_id'] = user.id
+    
+    return jsonify({
+        "id": user.id,
+        "username": user.username
+    }), 200
 
 @auth_bp.route('/api/logout', methods=['POST'])
 def logout():
-    # In a real app, you would clear the session or invalidate the token
+    # Clear the session
+    session.pop('user_id', None)
     return '', 200
 
 @auth_bp.route('/api/user', methods=['GET'])
 def get_user():
-    # Placeholder for authentication middleware
-    # In a real app, you would get the user from the session or token
-    user_id = 1  # Temporary
+    # Get user from session
+    user_id = session.get('user_id')
+    if not user_id:
+        return '', 401
+    
     user = User.query.get(user_id)
     if not user:
         return '', 401
-    return jsonify(user.__dict__), 200
-
+        
+    return jsonify({
+        "id": user.id,
+        "username": user.username
+    }), 200
