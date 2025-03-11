@@ -68,7 +68,7 @@ function SongItem({
           ? "bg-primary text-primary-foreground"
           : "hover:bg-accent",
         playCount === 0 && "border-l-4 border-yellow-500",
-        playCount === 1 && "border-l-4 border-green-500",
+        playCount >= 1 && "border-l-4 border-green-500",
       )}
       onClick={onClick}
     >
