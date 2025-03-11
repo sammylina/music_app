@@ -57,7 +57,7 @@ function SongItem({
   onClick: () => void;
 }) {
   const { data: playCount } = useQuery<number>({
-    queryKey: ["/api/songs", song.id, "plays"],
+    queryKey: [`/api/songs/${song.id}/plays`],
   });
 
   return (

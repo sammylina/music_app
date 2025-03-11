@@ -4,6 +4,7 @@ import { Playlist, Song } from "@shared/schema";
 import PlaylistGrid from "@/components/playlist-grid";
 import SongList from "@/components/song-list";
 import AudioPlayer from "@/components/audio-player";
+import { getPlaylistSongs } from "../lib/queryClient";
 
 export default function HomePage() {
   const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(null);
@@ -13,10 +14,12 @@ export default function HomePage() {
     queryKey: ["/api/playlists"],
   });
 
+
   const { data: songs } = useQuery<Song[]>({
-    queryKey: ["/api/playlists", selectedPlaylist?.id, "songs"],
+    queryKey: [`/api/playlists/${selectedPlaylist?.id}/songs`],
     enabled: !!selectedPlaylist,
   });
+
 
   return (
     <div className="min-h-screen bg-background">
