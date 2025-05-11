@@ -1,6 +1,7 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 import config from '../config';
 
+
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
@@ -62,22 +63,22 @@ export const queryClient = new QueryClient({
 
 // Auth utility functions
 export const loginUser = async (username: string, password: string) => {
-  const res = await apiRequest('POST', '/api/login', { username, password });
+  const res = await apiRequest('POST', '/login', { username, password });
   return res.json();
 };
 
 export const registerUser = async (username: string, password: string) => {
-  const res = await apiRequest('POST', '/api/register', { username, password });
+  const res = await apiRequest('POST', '/register', { username, password });
   return res.json();
 };
 
 export const logoutUser = async () => {
-  await apiRequest('POST', '/api/logout', {});
+  await apiRequest('POST', '/logout', {});
 };
 
 export const getCurrentUser = async () => {
   try {
-    const res = await apiRequest('GET', '/api/user');
+    const res = await apiRequest('GET', '/user');
     if (!res.ok) {
       if (res.status === 401) return null;
       throw new Error('Failed to get current user');
@@ -89,11 +90,11 @@ export const getCurrentUser = async () => {
 };
 
 export const getPlaylists = async () => {
-  const res = await apiRequest('GET', '/api/playlists');
+  const res = await apiRequest('GET', '/playlists');
   return res.json();
 };
 
 export const getPlaylistSongs = async (playlistId: number) => {
-  const res = await apiRequest('GET', `/api/playlists/${playlistId}/songs`);
+  const res = await apiRequest('GET', `/playlists/${playlistId}/songs`);
   return res.json();
 };
