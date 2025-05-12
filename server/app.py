@@ -10,6 +10,7 @@ from werkzeug.security import generate_password_hash
 import psycopg2
 
 def create_app(config_name=None):
+
     if config_name is None:
         config_name = os.getenv('FLASK_ENV', 'default')
 
@@ -24,6 +25,7 @@ def create_app(config_name=None):
 
     # Print the database URL without credentials for debugging
     db_url = app.config['SQLALCHEMY_DATABASE_URI']
+    print('db location: ', db_url)
     if db_url.startswith('postgresql'):
         print(f"Using PostgreSQL database")
 
@@ -55,12 +57,12 @@ def create_app(config_name=None):
 
             # Create playlists
             chill = Playlist(
-                title="Chill Vibes",
-                description="Relaxing tunes for your downtime"
+                title="Level 1",
+                description="If you are a beginner start here!!"
             )
             workout = Playlist(
-                title="Workout Mix",
-                description="High-energy songs to keep you motivated"
+                title="Level 2",
+                description="For intermediate students only"
             )
             db.session.add_all([chill, workout])
             db.session.commit()
@@ -68,28 +70,28 @@ def create_app(config_name=None):
             # Add songs
             songs = [
                 Song(
-                    title="Ocean Waves",
+                    title="Exercise 1",
                     artist="Nature Sounds",
                     playlist_id=chill.id,
-                    audio_file="ocean-waves.mp3"
+                    audio_file="amharic_lesson_1.mp3"
                 ),
                 Song(
-                    title="Gentle Rain",
+                    title="Exercise 2",
                     artist="Ambient Music",
                     playlist_id=chill.id,
-                    audio_file="gentle-rain.mp3"
+                    audio_file="amharic_lesson_2.mp3"
                 ),
                 Song(
-                    title="Power Up",
+                    title="Exercise 3",
                     artist="Energy Beats",
                     playlist_id=workout.id,
-                    audio_file="power-up.mp3"
+                    audio_file="amharic_lesson_3.mp3"
                 ),
                 Song(
-                    title="Fast Pace",
+                    title="Exercise 4",
                     artist="Workout Kings",
                     playlist_id=workout.id,
-                    audio_file="fast-pace.mp3"
+                    audio_file="amharic_lesson_4.mp3"
                 )
             ]
             db.session.add_all(songs)
