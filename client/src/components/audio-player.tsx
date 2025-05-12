@@ -50,7 +50,7 @@ export default function AudioPlayer({
 
   const handlePlay = async () => {
     try {
-      await apiRequest("POST", `/api/songs/${song.id}/play`);
+      await apiRequest("POST", `/songs/${song.id}/play`);
       setIsPlaying(true);
       audioRef.current?.play();
     } catch (error) {
