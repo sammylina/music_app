@@ -29,3 +29,14 @@ class PlayHistory(db.Model):
     song_id = db.Column(db.Integer, db.ForeignKey('song.id'), nullable=False)
     played_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
+class Lesson(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    lines = db.relationship('Line', backref='lesson', cascade="all, delete-orphan")
+
+class Line(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.Text, nullable=False)
+    audio_file = db.Column(db.String(255))
+    lesson_id = db.Column(db.Integer, db.ForeignKey('lesson.id'), nullable=False)
+    order = db.Column(db.Integer, default=0)

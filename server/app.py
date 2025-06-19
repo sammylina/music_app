@@ -5,6 +5,7 @@ from .models import db
 from .auth_routes import auth_bp
 from .playlist_routes import playlist_bp
 from .song_routes import song_bp
+from .admin_routes import admin_bp, init_admin
 from .config import config
 from werkzeug.security import generate_password_hash
 import psycopg2
@@ -34,6 +35,9 @@ def create_app(config_name=None):
     app.register_blueprint(auth_bp)
     app.register_blueprint(playlist_bp)
     app.register_blueprint(song_bp)
+    app.register_blueprint(admin_bp)
+
+    init_admin(app)
 
     # Create database and seed data
     with app.app_context():
