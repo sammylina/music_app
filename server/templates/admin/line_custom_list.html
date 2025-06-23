@@ -1,6 +1,7 @@
 {% extends 'admin/master.html' %}
 {% block body %}
   <h3>Lines for Lesson: {{ lesson.title }}</h3>
+  <a href="{{ url_for('line.add_line', lesson_id=lesson.id) }}" class="btn btn-success mb-3">➕ Add New Line</a>
 
   <form id="reorderForm" method="POST" action="{{ url_for('line.reorder_view', lesson_id=lesson.id) }}">
     <table class="table table-striped">
