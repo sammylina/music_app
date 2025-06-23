@@ -57,6 +57,36 @@ class LineModelView(ModelView):
         return self.render('admin/line_custom_edit.html', line=line)
 
 
+    @expose('/reorder', methods=['POST'])
+    def reorder_view(self):
+        lesson_id = request.args.get('lesson_id', type=int)
+        if not lesson_id:
+            flash('Lesson ID is missing', 'error')
+            return redirect(url_for('lesson.index_view'))
+
+        lesson = Lesson.query.get_or_404(lesson_id)
+
+        # 'ordered_line_ids' holds all line ids in the new order
+        ordered_line_ids = request.form.getlist('ordered_line_ids')
+
+        try:
+            # Validate all IDs belong to this lesson
+            lines_by_id = {str(line.id): line for line in lesson.lines}
+            if set(ordered_line_ids) != set(lines_by_id.keys()):
+                flash('Invalid line IDs submitted.', 'error')
+                return redirect(url_for('.index_view', lesson_id=lesson_id))
+
+            # Update order based on position in ordered_line_ids list
+            for order_idx, line_id in enumerate(ordered_line_ids):
+                lines_by_id[line_id].order = order_idx + 1 # 1-based order
+
+            db.session.commit()
+            flash('Line order updated successfully!', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error updating order: {e}', 'error')
+
+        return redirect(url_for('.index_view', lesson_id=lesson_id))
 
 # Custom Admin View for Lesson (with inline lines)
 class LessonModelView(ModelView):
