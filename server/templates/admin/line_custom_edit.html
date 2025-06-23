@@ -9,15 +9,10 @@
     </div>
 
     <div class="form-group">
-      <label for="order">Order</label>
-      <input type="number" name="order" id="order" class="form-control" value="{{ line.order }}">
-    </div>
-
-    <div class="form-group">
       <label>Current Audio</label><br>
       {% if line.audio_file %}
         <audio controls>
-          <source src="{{ url_for('static', filename='uploads/' ~ line.audio_file) }}">
+          <source src="{{ url_for('admin_files.serve_audio', filename=line.audio_file) }}">
         </audio>
       {% else %}
         No audio uploaded

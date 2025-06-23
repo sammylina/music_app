@@ -1,11 +1,12 @@
 # admin_routes.py
-from flask import Blueprint, send_from_directory, request, flash, redirect, url_for
+from flask import Blueprint, send_from_directory, request, flash, redirect, url_for, current_app
 from flask_admin import Admin, form, expose
 from flask_admin.contrib.sqla import ModelView
 import os
 import uuid
 from .models import db, Lesson, Line
 from wtforms.validators import ValidationError
+from werkzeug.utils import secure_filename
 from markupsafe import Markup
 
 # Optional: protect admin with Flask-Login later
@@ -22,6 +23,10 @@ class LineModelView(ModelView):
     can_edit = False
     can_delete = False
 
+    @staticmethod
+    def allowed_file(filename):
+        return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'mp3', 'wav', 'ogg'}
+
     @expose('/')
     def index_view(self):
         lesson_id = request.args.get('lesson_id', type=int)
@@ -34,6 +39,7 @@ class LineModelView(ModelView):
 
         return self.render('admin/line_custom_list.html', lesson=lesson, lines=lesson.lines)
 
+
     @expose('/edit/<int:id>', methods=('GET', 'POST'))
     def edit_view(self, id):
         line = Line.query.get_or_404(id)
@@ -44,10 +50,13 @@ class LineModelView(ModelView):
             line.order = request.form.get('order', line.order)
 
             audio_file = request.files.get('audio_file')
-            if audio_file and allowed_file(audio_file.filename):
-                filename = secure_filename(audio_file.filename)
-                audio_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            if audio_file and self.allowed_file(audio_file.filename):
+                filename = f"{uuid.uuid4().hex}_{secure_filename(audio_file.filename)}"
+                upload_folder = os.path.join(current_app.root_path, 'storage/audio')
+                os.makedirs(upload_folder, exist_ok=True)
+                audio_file.save(os.path.join(upload_folder, filename))
                 line.audio_file = filename
+
             
             db.session.commit()
             flash('Line updated', 'success')
