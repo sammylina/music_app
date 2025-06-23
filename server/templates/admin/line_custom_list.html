@@ -1,0 +1,31 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+  <h3>Lines for Lesson: {{ lesson.title }}</h3>
+  <table class="table table-striped">
+    <thead>
+      <tr><th>Order</th><th>Text</th><th>Audio</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for line in lines %}
+      <tr>
+        <td>{{ line.order }}</td>
+        <td>{{ line.text }}</td>
+        <td>
+          {% if line.audio_file %}
+            <audio controls>
+              <source src="{{ url_for('static', filename='uploads/' ~ line.audio_file) }}">
+            </audio>
+          {% else %}
+            No audio
+          {% endif %}
+        </td>
+        <td>
+          <a href="{{ url_for('line.edit_view', id=line.id) }}" class="btn btn-sm btn-primary">Edit</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <a href="{{ url_for('lesson.index_view') }}" class="btn btn-secondary">Back to Lessons</a>
+{% endblock %}
