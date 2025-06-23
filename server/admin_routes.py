@@ -88,8 +88,34 @@ class LineModelView(ModelView):
 
         return redirect(url_for('.index_view', lesson_id=lesson_id))
 
+    @expose('/add')
+    def add_line(self):
+        lesson_id = request.args.get('lesson_id', type=int)
+        if not lesson_id:
+            flash('Lesson ID missing', 'error')
+            return redirect(url_for('lesson.index_view'))
+
+        lesson = Lesson.query.get_or_404(lesson_id)
+
+        # Determine next order
+        max_order = db.session.query(db.func.max(Line.order)).filter_by(lesson_id=lesson_id).scalar() or 0
+        new_line = Line(
+            text='[Your text here]',
+            audio_file='',  # or maybe 'placeholder.mp3'
+            order=max_order + 1,
+            lesson_id=lesson_id
+        )
+
+        db.session.add(new_line)
+        db.session.commit()
+
+        flash('✅ New line added!', 'success')
+        return redirect(url_for('.index_view', lesson_id=lesson_id))
+
 # Custom Admin View for Lesson (with inline lines)
 class LessonModelView(ModelView):
+
+    can_edit = False
 
     def _title_formatter(view, context, model, name):
         line_url = url_for('line.index_view', lesson_id=model.id)
@@ -99,15 +125,15 @@ class LessonModelView(ModelView):
         'title': _title_formatter
     }
 
-    inline_models = [(Line, dict(form_extra_fields={
-        'audio_file': form.FileUploadField(
-            'Audio File',
-            base_path=os.path.join(os.getcwd(), 'storage/audio'),
-            relative_path='.',
-            allow_overwrite=True
-        )
-    }))]
-    form_columns = ['title', 'lines']
+#    inline_models = [(Line, dict(form_extra_fields={
+#        'audio_file': form.FileUploadField(
+#            'Audio File',
+#            base_path=os.path.join(os.getcwd(), 'storage/audio'),
+#            relative_path='.',
+#            allow_overwrite=True
+#        )
+#    }))]
+    #form_columns = ['title', 'lines']
 
 # Function to init Flask-Admin (called from app.py)
 def init_admin(app):
