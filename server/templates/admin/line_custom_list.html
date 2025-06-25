@@ -45,6 +45,7 @@
       <!-- Right: Save Order and Back Buttons -->
       <div>
         <button type="submit" form="reorderForm" class="btn btn-primary btn-sm mr-2">💾 Save Order</button>
+        <a href="{{ url_for('line.build_lesson_audio', lesson_id=lesson.id) }}" class="btn btn-warning btn-sm mr-2">🔨 Build</a>
         <a href="{{ url_for('lesson.index_view') }}" class="btn btn-secondary btn-sm">↩️ Back to Lessons</a>
       </div>
     </div>

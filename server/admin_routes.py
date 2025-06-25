@@ -8,6 +8,7 @@ from .models import db, Lesson, Line
 from wtforms.validators import ValidationError
 from werkzeug.utils import secure_filename
 from markupsafe import Markup
+from pydub import AudioSegment
 
 # Optional: protect admin with Flask-Login later
 admin_bp = Blueprint('admin_files', __name__)
@@ -120,6 +121,69 @@ class LineModelView(ModelView):
 
         flash('✅ New line added!', 'success')
         return redirect(url_for('.index_view', lesson_id=lesson_id))
+
+
+
+    @expose('/build')
+    def build_lesson_audio(self):
+        lesson_id = request.args.get('lesson_id', type=int)
+        if not lesson_id:
+            flash("Lesson ID is missing", "error")
+            return redirect(url_for('lesson.index_view'))
+
+        lesson = Lesson.query.get_or_404(lesson_id)
+        lines = sorted(lesson.lines, key=lambda l: l.order)
+
+        if not lines:
+            flash("No lines found for this lesson", "warning")
+            return redirect(url_for('.index_view', lesson_id=lesson_id))
+
+        combined = AudioSegment.empty()
+        audio_dir = os.path.join(os.path.dirname(__file__), 'storage', 'audio')
+
+        try:
+            for line in lines:
+                if not line.audio_file:
+                    continue  # skip empty
+
+                audio_path = os.path.join(audio_dir, line.audio_file)
+                if not os.path.exists(audio_path):
+                    flash(f"Missing file: {line.audio_file}", "error")
+                    return redirect(url_for('.index_view', lesson_id=lesson_id))
+
+                clip = AudioSegment.from_wav(audio_path)
+                combined += clip  # no silence, no fade
+
+            # Export combined audio
+            output_filename = f'lesson_{lesson.id}.mp3'
+            output_path = os.path.join(audio_dir, output_filename)
+            combined.export(output_path, format='mp3')
+
+            # Create or update Song entry
+            from .models import Song
+
+            song = Song.query.filter_by(title=lesson.title, playlist_id=1).first()
+            if not song:
+                song = Song(
+                    title=lesson.title,
+                    artist='System',
+                    playlist_id=1,
+                    audio_file=output_filename
+                )
+                db.session.add(song)
+            else:
+                song.audio_file = output_filename  # overwrite file path
+
+            db.session.commit()
+
+            flash("✅ Lesson audio built and saved to Song!", "success")
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f"⚠️ Build failed: {str(e)}", "error")
+
+        return redirect(url_for('.index_view', lesson_id=lesson_id))
+
 
 # Custom Admin View for Lesson (with inline lines)
 class LessonModelView(ModelView):
