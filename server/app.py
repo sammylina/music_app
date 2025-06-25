@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
+from flask_migrate import Migrate
 import os
 from .models import db
 from .auth_routes import auth_bp
@@ -16,6 +17,7 @@ def create_app(config_name=None):
         config_name = os.getenv('FLASK_ENV', 'default')
 
     app = Flask(__name__)
+    migrate = Migrate(app, db)
     CORS(app, supports_credentials=True)
 
     # Configure from config classes
