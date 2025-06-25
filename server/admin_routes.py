@@ -4,7 +4,7 @@ from flask_admin import Admin, form, expose
 from flask_admin.contrib.sqla import ModelView
 import os
 import uuid
-from .models import db, Lesson, Line
+from .models import db, Lesson, Line, Song
 from wtforms.validators import ValidationError
 from werkzeug.utils import secure_filename
 from markupsafe import Markup
@@ -143,14 +143,13 @@ class LineModelView(ModelView):
             return redirect(url_for('.index_view', lesson_id=lesson_id))
 
         combined = AudioSegment.empty()
-        audio_dir = os.path.join(os.path.dirname(__file__), 'storage', 'audio')
 
         try:
             for line in lines:
                 if not line.audio_file:
                     continue  # skip empty
 
-                audio_path = os.path.join(audio_dir, line.audio_file)
+                audio_path = os.path.join(current_app.config['AUDIO_STORAGE_ROOT'], 'lines', line.audio_file)
                 if not os.path.exists(audio_path):
                     flash(f"Missing file: {line.audio_file}", "error")
                     return redirect(url_for('.index_view', lesson_id=lesson_id))
@@ -160,7 +159,7 @@ class LineModelView(ModelView):
 
             # Export combined audio
             output_filename = f'lesson_{lesson.id}.mp3'
-            output_path = os.path.join(audio_dir, output_filename)
+            output_path = os.path.join(current_app.config['AUDIO_STORAGE_ROOT'], 'songs', output_filename)
             combined.export(output_path, format='mp3')
 
             # Create or update Song entry
