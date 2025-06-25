@@ -14,9 +14,9 @@ from pydub import AudioSegment
 admin_bp = Blueprint('admin_files', __name__)
 
 # Serve uploaded audio files
-@admin_bp.route('/storage/audio/<filename>')
+@admin_bp.route('/storage/audio/<path:filename>')
 def serve_audio(filename):
-    return send_from_directory('storage/audio', filename)
+    return send_from_directory(current_app.config['AUDIO_STORAGE_ROOT'], filename)
 
 # Custom Admin View for Line
 class LineModelView(ModelView):
@@ -31,7 +31,6 @@ class LineModelView(ModelView):
     @expose('/')
     def index_view(self):
         lesson_id = request.args.get('lesson_id', type=int)
-        print('lesson id: ', lesson_id)
         if not lesson_id:
             flash('Please select a lesson first', 'warning')
             return redirect(url_for('lesson.index_view'))
@@ -52,11 +51,16 @@ class LineModelView(ModelView):
 
             audio_file = request.files.get('audio_file')
             if audio_file and self.allowed_file(audio_file.filename):
-                filename = f"{uuid.uuid4().hex}_{secure_filename(audio_file.filename)}"
-                upload_folder = os.path.join(current_app.root_path, 'storage/audio')
-                os.makedirs(upload_folder, exist_ok=True)
-                audio_file.save(os.path.join(upload_folder, filename))
-                line.audio_file = filename
+                lesson_id = line.lesson_id
+                line_id = line.id
+                filename = f'lesson_{lesson_id}/line_{line_id}.wav'
+                full_path = os.path.join(current_app.config['AUDIO_STORAGE_ROOT'], 'lines', filename)
+
+                print('saveing the relative path: ', filename)
+                os.makedirs(os.path.dirname(full_path), exist_ok=True)
+                audio_file.save(full_path)
+
+                line.audio_file = filename  # save relative path
 
             
             db.session.commit()

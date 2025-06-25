@@ -6,6 +6,8 @@ load_dotenv()
 class Config:
     SECRET_KEY = os.getenv('SESSION_SECRET', 'dev_key')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    AUDIO_STORAGE_ROOT = os.getenv('AUDIO_STORAGE_ROOT', 'storage/audio')
+
     # Use Replit's PostgreSQL database URL if available
     db_url = os.getenv('DATABASE_URL')
     if db_url and db_url.startswith('postgresql'):

@@ -9,10 +9,9 @@
     </div>
 
     <div class="form-group">
-      <label>Current Audio</label><br>
       {% if line.audio_file %}
         <audio controls>
-          <source src="{{ url_for('admin_files.serve_audio', filename=line.audio_file) }}">
+          <source src="{{ url_for('admin_files.serve_audio', filename='lines/' + line.audio_file) }}">
         </audio>
       {% else %}
         No audio uploaded
@@ -20,7 +19,9 @@
     </div>
 
     <div class="form-group">
-      <label for="audio_file">Upload New Audio</label>
+        {% if line.audio_file %}
+          <label for="audio_file">{{ line.audio_file }} Uploaded!!</label>
+        {% endif %}
       <input type="file" name="audio_file" id="audio_file" class="form-control-file">
     </div>
 
