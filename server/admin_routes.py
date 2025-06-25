@@ -160,19 +160,18 @@ class LineModelView(ModelView):
             combined.export(output_path, format='mp3')
 
             # Create or update Song entry
-            from .models import Song
+            if lesson.song:
+                lesson.song.audio_file = output_filename  # overwrite file path
 
-            song = Song.query.filter_by(title=lesson.title, playlist_id=1).first()
-            if not song:
-                song = Song(
-                    title=lesson.title,
+            else:
+                song = Song( title=lesson.title,
                     artist='System',
                     playlist_id=1,
                     audio_file=output_filename
                 )
                 db.session.add(song)
-            else:
-                song.audio_file = output_filename  # overwrite file path
+                db.session.flush() # Get song.id before commit
+                lesson.song = song
 
             db.session.commit()
 

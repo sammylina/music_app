@@ -32,7 +32,10 @@ class PlayHistory(db.Model):
 class Lesson(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
+    song_id = db.Column(db.Integer, db.ForeignKey('song.id'), nullable=True)
+
     lines = db.relationship('Line', backref='lesson', cascade="all, delete-orphan")
+    song = db.relationship('Song', backref='lesson', uselist=False)
 
 class Line(db.Model):
     id = db.Column(db.Integer, primary_key=True)
