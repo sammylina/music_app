@@ -7,3 +7,4 @@ vite.config.ts.*
 .env
 /server/instance
 /server/__pycache__
+/server/storage
