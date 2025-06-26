@@ -1,5 +1,5 @@
 
-from flask import Blueprint, request, jsonify, send_file
+from flask import Blueprint, request, jsonify, send_file, current_app
 import os
 from .models import db, Song, PlayHistory
 
@@ -8,7 +8,7 @@ song_bp = Blueprint('song', __name__)
 @song_bp.route('/api/songs/<int:song_id>/audio', methods=['GET'])
 def get_song_audio(song_id):
     song = Song.query.get_or_404(song_id)
-    file_path = os.path.join(os.path.dirname(__file__), 'storage', 'audio', song.audio_file)
+    file_path = os.path.join(current_app.config['AUDIO_STORAGE_ROOT'], 'songs', song.audio_file)
     return send_file(
         file_path,
         mimetype='audio/mpeg'
