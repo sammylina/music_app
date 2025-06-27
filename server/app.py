@@ -16,6 +16,8 @@ def create_app(config_name=None):
     if config_name is None:
         config_name = os.getenv('FLASK_ENV', 'default')
 
+    print('flask environment is: ', config_name)
+
     app = Flask(__name__)
     migrate = Migrate(app, db)
     CORS(app, supports_credentials=True)

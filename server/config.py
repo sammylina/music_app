@@ -1,7 +1,15 @@
 from dotenv import load_dotenv
 import os
 
-load_dotenv()
+env = os.getenv("FLASK_ENV", "development").lower()
+
+# Load the appropriate .env file
+if env == "production":
+    load_dotenv(dotenv_path=".env.production")
+elif env == "development":
+    load_dotenv(dotenv_path=".env.development")
+else:
+    load_dotenv(dotenv_path=".env")  #
 
 class Config:
     SECRET_KEY = os.getenv('SESSION_SECRET', 'dev_key')
