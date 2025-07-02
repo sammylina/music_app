@@ -2,12 +2,12 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_migrate import Migrate
 import os
-from .models import db
-from .auth_routes import auth_bp
-from .playlist_routes import playlist_bp
-from .song_routes import song_bp
-from .admin_routes import admin_bp, init_admin
-from .config import config
+from server.models import db
+from server.auth_routes import auth_bp
+from server.playlist_routes import playlist_bp
+from server.song_routes import song_bp
+from server.admin_routes import admin_bp, init_admin
+from server.config import config
 from werkzeug.security import generate_password_hash
 import psycopg2
 
@@ -16,10 +16,7 @@ def create_app(config_name=None):
     if config_name is None:
         config_name = os.getenv('FLASK_ENV', 'default')
 
-    print('flask environment is: ', config_name)
-
     app = Flask(__name__)
-    migrate = Migrate(app, db)
     CORS(app, supports_credentials=True)
 
     # Configure from config classes
@@ -27,6 +24,8 @@ def create_app(config_name=None):
 
     # Initialize extensions
     db.init_app(app)
+
+    migrate = Migrate(app, db)
 
     # Print the database URL without credentials for debugging
     db_url = app.config['SQLALCHEMY_DATABASE_URI']

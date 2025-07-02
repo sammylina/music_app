@@ -1,6 +1,6 @@
 
 from flask import Blueprint, request, jsonify
-from .models import db, Playlist, Song
+from server.models import db, Playlist, Song
 
 playlist_bp = Blueprint('playlist', __name__)
 

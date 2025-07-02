@@ -1,7 +1,7 @@
 
 from flask import Blueprint, request, jsonify, send_file, current_app
 import os
-from .models import db, Song, PlayHistory
+from server.models import db, Song, PlayHistory
 
 song_bp = Blueprint('song', __name__)
 

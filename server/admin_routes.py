@@ -3,10 +3,7 @@ from flask import Blueprint, send_from_directory, request, flash, redirect, url_
 from flask_admin import Admin, form, expose
 from flask_admin.contrib.sqla import ModelView
 import os
-import uuid
-from .models import db, Lesson, Line, Song
-from wtforms.validators import ValidationError
-from werkzeug.utils import secure_filename
+from server.models import db, Lesson, Line, Song
 from markupsafe import Markup
 from pydub import AudioSegment
 
@@ -56,7 +53,6 @@ class LineModelView(ModelView):
                 filename = f'lesson_{lesson_id}/line_{line_id}.wav'
                 full_path = os.path.join(current_app.config['AUDIO_STORAGE_ROOT'], 'lines', filename)
 
-                print('saveing the relative path: ', filename)
                 os.makedirs(os.path.dirname(full_path), exist_ok=True)
                 audio_file.save(full_path)
 
