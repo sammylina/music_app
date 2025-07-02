@@ -10,11 +10,14 @@ elif env == "development":
     load_dotenv(dotenv_path=".env.development")
 else:
     load_dotenv(dotenv_path=".env")  #
+    
+
+BASE_DIR = os.path.abspath(os.path.dirname(__file__)) 
 
 class Config:
     SECRET_KEY = os.getenv('SESSION_SECRET', 'dev_key')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    AUDIO_STORAGE_ROOT = os.getenv('AUDIO_STORAGE_ROOT', 'storage/audio')
+    AUDIO_STORAGE_ROOT = os.path.join(BASE_DIR, os.getenv('AUDIO_STORAGE_ROOT', 'storage/audio'))
 
     # Use Replit's PostgreSQL database URL if available
     db_url = os.getenv('DATABASE_URL')
