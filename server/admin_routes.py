@@ -160,6 +160,10 @@ class LineModelView(ModelView):
 
                 combined += clip  # no silence, no fade
 
+                if getattr(line, 'break_after', False):  # check break_after attribute
+                    silence = AudioSegment.silent(duration=len(clip))  # silence same length as clip
+                    combined += silence  # add silence break after clip
+
             # Export combined audio
             output_filename = f'lesson_{lesson.id}.mp3'
             output_path = os.path.join(current_app.config['AUDIO_STORAGE_ROOT'], 'songs', output_filename)
