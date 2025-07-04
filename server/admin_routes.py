@@ -41,6 +41,7 @@ class LineModelView(ModelView):
             # Process form data manually (text, order, audio file)
             line.text = request.form.get('text', line.text)
             line.order = request.form.get('order', line.order)
+            line.break_after = 'break_after' in request.form
 
             audio_file = request.files.get('audio_file')
             if audio_file and self.allowed_file(audio_file.filename):

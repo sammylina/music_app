@@ -43,3 +43,4 @@ class Line(db.Model):
     audio_file = db.Column(db.String(255))
     lesson_id = db.Column(db.Integer, db.ForeignKey('lesson.id'), nullable=False)
     order = db.Column(db.Integer, default=0)
+    break_after = db.Column(db.Boolean, default=False)

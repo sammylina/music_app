@@ -63,7 +63,7 @@
       </thead>
       <tbody id="linesTbody">
         {% for line in lines|sort(attribute='order') %}
-        <tr data-id="{{ line.id }}">
+        <tr data-id="{{ line.id }}" {% if line.break_after %}style="background-color: #FFDDAA;"{% endif %}>
           <td class="order-cell">{{ line.order }}</td>
           <td>{{ line.text }}</td>
           <td>
