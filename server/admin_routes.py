@@ -1,5 +1,5 @@
 # admin_routes.py
-from flask import Blueprint, send_from_directory, request, flash, redirect, url_for, current_app
+from flask import Blueprint, request, flash, redirect, url_for, current_app
 from flask_admin import Admin, form, expose
 from flask_admin.contrib.sqla import ModelView
 import os
@@ -10,10 +10,6 @@ from pydub import AudioSegment
 # Optional: protect admin with Flask-Login later
 admin_bp = Blueprint('admin_files', __name__)
 
-# Serve uploaded audio files
-@admin_bp.route('/storage/audio/<path:filename>')
-def serve_audio(filename):
-    return send_from_directory(current_app.config['AUDIO_STORAGE_ROOT'], filename)
 
 # Custom Admin View for Line
 class LineModelView(ModelView):
@@ -53,7 +49,11 @@ class LineModelView(ModelView):
                 filename = f'lesson_{lesson_id}/line_{line_id}.wav'
                 full_path = os.path.join(current_app.config['AUDIO_STORAGE_ROOT'], 'lines', filename)
 
-                os.makedirs(os.path.dirname(full_path), exist_ok=True)
+                try:
+                    os.makedirs(os.path.dirname(full_path), exist_ok=True)
+                except Exception as e:
+                    flash('Unable to create folder for {full_path}','error') 
+
                 audio_file.save(full_path)
 
                 line.audio_file = filename  # save relative path
@@ -150,7 +150,13 @@ class LineModelView(ModelView):
                     flash(f"Missing file: {line.audio_file}", "error")
                     return redirect(url_for('.index_view', lesson_id=lesson_id))
 
-                clip = AudioSegment.from_wav(audio_path)
+                if os.path.getsize(audio_path) < 1000:
+                    flash(f"Audio file {line.audio_file} is too small or empty.", "error")
+                    return redirect(url_for('.index_view', lesson_id=lesson_id))
+
+
+                clip = AudioSegment.from_file(audio_path)
+
                 combined += clip  # no silence, no fade
 
             # Export combined audio

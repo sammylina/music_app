@@ -22,6 +22,11 @@ def create_app(config_name=None):
     # Configure from config classes
     app.config.from_object(config[config_name])
 
+    # Add audio url in to template context
+    @app.context_processor
+    def inject_audio_url():
+        return dict(audio_url='/audio/')
+
     # Initialize extensions
     db.init_app(app)
 
